@@ -79,7 +79,7 @@ class SupabaseClient {
         $response = $this->requestWithResponse('GET', $path, [
             'headers' => ['Prefer' => 'count=exact'],
         ], $token);
-
+        
         $body = (string) $response->getBody();
         $data = $body === '' ? [] : json_decode($body, true);
         $count = null;

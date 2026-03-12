@@ -26,6 +26,7 @@ class SongModel {
             $params['or'] = "artist.ilike.$like,song.ilike.$like";
         }
 
+
         return $this->supabase->getTableWithCount($this->table, '*', $token, $params);
     }
 

@@ -2,7 +2,7 @@
 
 <?= $this->section('content') ?>
 
-<?php $isEdit = ! empty($song); ?>
+<?php $isEdit = ! empty($song['id']); ?>
 
 <div class="grid" style="grid-template-columns: 1fr auto; align-items: center; gap: 1rem;">
     <div>
