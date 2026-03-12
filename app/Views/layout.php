@@ -302,7 +302,7 @@
 
 <header class="navbar">
     <a class="brand" href="/dashboard">
-        <img src="/logo.png" alt="Logo" />
+        <img style="background-color: #1f2937;" src="/logo.png" alt="Logo" />
         <span>RN Report</span>
     </a>
 
