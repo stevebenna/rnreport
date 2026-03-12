@@ -11,6 +11,9 @@ $routes->get('/logout', 'AuthController::logout');
 $routes->get('/dashboard', 'Dashboard::index', ['filter' => 'auth']);
 
 $routes->group('', ['filter' => 'auth'], static function ($routes) {
+    $routes->get('/report-scf', 'Reports::index');
+    $routes->post('/report-scf/process', 'Reports::process');
+
     $routes->get('/canzoni', 'Songs::index');
     $routes->get('/canzoni/create', 'Songs::create');
     $routes->post('/canzoni/store', 'Songs::store');

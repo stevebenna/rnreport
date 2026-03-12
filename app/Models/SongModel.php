@@ -39,6 +39,28 @@ class SongModel {
         return is_array($rows) && count($rows) ? $rows[0] : null;
     }
 
+    public function all(string $token): array {
+        $results = [];
+        $limit = 1000;
+        $offset = 0;
+
+        do {
+            $batch = $this->supabase->getTable($this->table, '*', $token, [
+                'limit' => $limit,
+                'offset' => $offset,
+            ]);
+
+            if (! is_array($batch) || count($batch) === 0) {
+                break;
+            }
+
+            $results = array_merge($results, $batch);
+            $offset += count($batch);
+        } while (count($batch) === $limit);
+
+        return $results;
+    }
+
     public function create(array $data, string $token): array {
         $rows = $this->supabase->insert($this->table, $data, $token);
         return is_array($rows) && count($rows) ? $rows[0] : [];

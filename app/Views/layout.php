@@ -309,6 +309,7 @@
     <?php if (session()->get('logged_in')) : ?>
         <div class="nav-links">
             <a href="/dashboard" class="<?= uri_string() === 'dashboard' ? 'active' : '' ?>">Dashboard</a>
+            <a href="/report-scf" class="<?= uri_string() === 'report-scf' ? 'active' : '' ?>">Report SCF/ItsRight</a>
             <a href="/canzoni" class="<?= str_starts_with(uri_string(), 'canzoni') ? 'active' : '' ?>">Canzoni</a>
         </div>
 
