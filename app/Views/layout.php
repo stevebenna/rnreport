@@ -169,12 +169,18 @@
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 1rem;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             background: var(--card);
             border-radius: var(--radius);
-            overflow: hidden;
+            overflow: visible;
+            min-width: 820px;
         }
 
         th, td {
@@ -184,10 +190,89 @@
         }
 
         th {
+            position: sticky;
+            top: 0;
+            z-index: 2;
             background: rgba(236, 105, 24, 0.12);
             color: var(--text);
             font-weight: 700;
             font-size: 0.85rem;
+        }
+
+        details.actions {
+            position: relative;
+        }
+
+        details.actions summary {
+            list-style: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            padding: 0.45rem 0.75rem;
+            border-radius: 8px;
+            border: 1px solid rgba(0,0,0,0.12);
+            background: rgba(255,255,255,0.9);
+            color: var(--text);
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        details.actions[open] summary {
+            background: rgba(255,255,255,1);
+        }
+
+        details.actions > div {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            margin-top: 0.35rem;
+            padding: 0.5rem;
+            background: var(--card);
+            border: 1px solid rgba(0,0,0,0.12);
+            border-radius: 10px;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+            white-space: nowrap;
+            z-index: 5;
+        }
+
+        details.actions > div a,
+        details.actions > div form {
+            display: block;
+        }
+
+        details.actions > div a {
+            padding: 0.35rem 0.5rem;
+            border-radius: 6px;
+            color: var(--text);
+            text-decoration: none;
+            transition: background 120ms ease;
+        }
+
+        details.actions > div a:hover {
+            background: rgba(236, 105, 24, 0.08);
+        }
+
+        details.actions > div form {
+            margin: 0;
+        }
+
+        details.actions > div button {
+            width: 100%;
+            padding: 0.35rem 0.5rem;
+            text-align: left;
+            border: none;
+            background: transparent;
+            color: var(--text);
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            line-height: 1.25;
+        }
+
+        details.actions > div button:hover {
+            background: rgba(236, 105, 24, 0.08);
         }
 
         tr:last-child td {
@@ -315,7 +400,9 @@
 
         <div class="nav-actions">
             <span class="user">👤 <?= esc(session()->get('user')['email'] ?? '') ?></span>
-            <a href="/logout" class="btn secondary">Logout</a>
+            <form action="/logout" method="post" style="margin:0;">
+                <button type="submit" class="btn secondary">Logout</button>
+            </form>
         </div>
     <?php endif; ?>
 </header>
@@ -329,6 +416,16 @@
 <footer class="footer">
     Built with CodeIgniter 4 • © <?= date('Y') ?>
 </footer>
+
+<script>
+    document.addEventListener('click', (event) => {
+        document.querySelectorAll('details.actions[open]').forEach((details) => {
+            if (!details.contains(event.target)) {
+                details.removeAttribute('open');
+            }
+        });
+    });
+</script>
 
 </body>
 </html>

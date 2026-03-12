@@ -23,7 +23,8 @@ class SongModel {
         if (! empty($search)) {
             $clean = str_replace([',', '*'], ['', ''], $search);
             $like = '*' . $clean . '*';
-            $params['or'] = "artist.ilike.$like,song.ilike.$like";
+            // Supabase expects the OR filter to be wrapped in parentheses.
+            $params['or'] = "(artist.ilike.$like,song.ilike.$like)";
         }
 
 

@@ -18,7 +18,7 @@ class Songs extends BaseController {
     public function index() {
         $search = trim((string) $this->request->getGet('q'));
         $page = max(1, (int) $this->request->getGet('page'));
-        $perPage = 10;
+        $perPage = max(1, (int) $this->request->getGet('perPage') ?: 100);
 
         $songs = [];
         $count = 0;
@@ -136,17 +136,25 @@ class Songs extends BaseController {
 
     protected function collectSongData(): array {
         return [
-            'artist' => $this->request->getPost('artist'),
-            'song'   => $this->request->getPost('song'),
-            'author' => $this->request->getPost('author'),
-            'label'  => $this->request->getPost('label'),
-            'iswc'   => $this->request->getPost('iswc'),
-            'isrc'   => $this->request->getPost('isrc'),
-            'duration' => $this->request->getPost('duration'),
-            'level'    => $this->request->getPost('level'),
-            'container' => $this->request->getPost('container'),
+            'artist' => $this->nullable($this->request->getPost('artist')),
+            'song'   => $this->nullable($this->request->getPost('song')),
+            'author' => $this->nullable($this->request->getPost('author')),
+            'label'  => $this->nullable($this->request->getPost('label')),
+            'iswc'   => $this->nullable($this->request->getPost('iswc')),
+            'isrc'   => $this->nullable($this->request->getPost('isrc')),
+            'duration' => $this->nullable($this->request->getPost('duration')),
+            'level'    => $this->nullable($this->request->getPost('level')),
+            'container' => $this->nullable($this->request->getPost('container')),
             'is_easy_listening' => $this->request->getPost('is_easy_listening') ? true : false,
         ];
+    }
+
+    private function nullable($value) {
+        if ($value === '' || $value === null) {
+            return null;
+        }
+
+        return $value;
     }
 
     protected function rules(): array {

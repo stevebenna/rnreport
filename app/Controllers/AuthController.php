@@ -43,6 +43,6 @@ class AuthController extends BaseController {
             $this->supabase->logout($token);
         }
         session()->destroy();
-        return redirect()->to('/login');
+        return redirect()->to('/');
     }
 }

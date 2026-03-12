@@ -14,11 +14,11 @@
         <?= csrf_field() ?>
         <div>
             <label for="email">Email</label>
-            <input id="email" type="email" name="email" placeholder="name@example.com" required />
+            <input id="email" type="email" name="email" placeholder="Email" required />
         </div>
         <div>
             <label for="password">Password</label>
-            <input id="password" type="password" name="password" required />
+            <input id="password" type="password" name="password" placeholder="Password" required />
         </div>
         <button type="submit" class="btn primary">Accedi</button>
     </form>

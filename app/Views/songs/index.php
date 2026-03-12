@@ -32,68 +32,99 @@
     <?php if (empty($songs)) : ?>
         <p>Ancora nessuna canzone. Clicca "Nuova canzone" per iniziare.</p>
     <?php else : ?>
-        <table>
-            <thead>
-                <tr>
-                    <th>Artista</th>
-                    <th>Canzone</th>
-                    <th>Interprete</th>
-                    <th>Editore</th>
-                    <th>Durata</th>
-                    <th>Livello</th>
-                    <th>Contenitore</th>
-                    <th>Azioni</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($songs as $song) : ?>
+        <div class="table-wrapper">
+            <table>
+                <thead>
                     <tr>
-                        <td><?= esc($song['artist'] ?? '') ?></td>
-                        <td>
-                            <a href="/canzoni/show/<?= urlencode($song['id']) ?>" style="color: var(--brand-dark); font-weight:700;">
-                                <?= esc($song['song'] ?? '') ?>
-                            </a>
-                        </td>
-                        <td><?= esc($song['author'] ?? '') ?></td>
-                        <td><?= esc($song['label'] ?? '') ?></td>
-                        <td><?= esc($song['duration'] ?? '') ?></td>
-                        <td>
-                            <?php if (! empty($song['level'])): ?>
-                                <span class="badge"><?= esc($song['level']) ?></span>
-                            <?php endif; ?>
-                        </td>
-                        <td><?= esc($song['container'] ?? '') ?></td>
-                        <td style="white-space: nowrap;">
-                            <a href="/canzoni/show/<?= urlencode($song['id']) ?>" class="btn secondary">Dettagli</a>
-                            <a href="/canzoni/edit/<?= urlencode($song['id']) ?>" class="btn secondary">Modifica</a>
-                            <form action="/canzoni/delete/<?= urlencode($song['id']) ?>" method="post" style="display:inline-block; margin:0;">
-                                <?= csrf_field() ?>
-                                <button type="submit" class="btn danger" onclick="return confirm('Sei sicuro di voler eliminare questa canzone?')">Elimina</button>
-                            </form>
-                        </td>
+                        <th>Artista</th>
+                        <th>Canzone</th>
+                        <th>Interprete</th>
+                        <th>Editore</th>
+                        <th>Durata</th>
+                        <th>Livello</th>
+                        <th>Contenitore</th>
+                        <th>Azioni</th>
                     </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    <?php foreach ($songs as $song) : ?>
+                        <tr>
+                            <td><?= esc($song['artist'] ?? '') ?></td>
+                            <td>
+                                <a href="/canzoni/show/<?= urlencode($song['id']) ?>" style="color: var(--brand-dark); font-weight:700;">
+                                    <?= esc($song['song'] ?? '') ?>
+                                </a>
+                            </td>
+                            <td><?= esc($song['author'] ?? '') ?></td>
+                            <td><?= esc($song['label'] ?? '') ?></td>
+                            <td><?= esc($song['duration'] ?? '') ?></td>
+                            <td>
+                                <?php if (! empty($song['level'])): ?>
+                                    <span class="badge"><?= esc($song['level']) ?></span>
+                                <?php endif; ?>
+                            </td>
+                            <td><?= esc($song['container'] ?? '') ?></td>
+                            <td style="white-space: nowrap;">
+                                <details class="actions">
+                                    <summary class="btn secondary">Azioni ▾</summary>
+                                    <div>
+                                        <a href="/canzoni/show/<?= urlencode($song['id']) ?>">Dettagli</a>
+                                        <a href="/canzoni/edit/<?= urlencode($song['id']) ?>">Modifica</a>
+                                        <form action="/canzoni/delete/<?= urlencode($song['id']) ?>" method="post">
+                                            <?= csrf_field() ?>
+                                            <button type="submit" onclick="return confirm('Sei sicuro di voler eliminare questa canzone?')">Elimina</button>
+                                        </form>
+                                    </div>
+                                </details>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
 
         <?php
             $totalPages = $count ? (int) ceil($count / $perPage) : 1;
             $currentPage = max(1, (int) ($page ?? 1));
         ?>
 
-        <?php if ($totalPages > 1) : ?>
+        <?php if ($totalPages > 1) :
+            $maxLinks = 5;
+            $startPage = max(1, $currentPage - 2);
+            $endPage = min($totalPages, $startPage + $maxLinks - 1);
+            if ($endPage - $startPage + 1 < $maxLinks) {
+                $startPage = max(1, $endPage - $maxLinks + 1);
+            }
+        ?>
             <div style="margin-top:1.25rem; display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
                 <span style="font-size:0.9rem; color: var(--muted);">Pagina <?= $currentPage ?> di <?= $totalPages ?> (<?= $count ?> risultati)</span>
-                <?php for ($p = 1; $p <= $totalPages; $p++) : ?>
-                    <?php
-                        $query = ['page' => $p];
-                        if (! empty($search)) {
-                            $query['q'] = $search;
-                        }
-                        $url = '/canzoni?' . http_build_query($query);
-                    ?>
-                    <a href="<?= esc($url) ?>" class="btn <?= $p === $currentPage ? 'primary' : 'secondary' ?>" style="padding:0.4rem 0.7rem; font-size:0.85rem;"><?= $p ?></a>
+
+                <?php
+                    $queryBase = [];
+                    if (! empty($search)) {
+                        $queryBase['q'] = $search;
+                    }
+
+                    $buildUrl = function ($page) use ($queryBase) {
+                        $query = $queryBase;
+                        $query['page'] = $page;
+                        return '/canzoni?' . http_build_query($query);
+                    };
+                ?>
+
+                <?php if ($currentPage > 1) : ?>
+                    <a href="<?= esc($buildUrl(1)) ?>" class="btn secondary" style="padding:0.4rem 0.7rem; font-size:0.85rem;">&laquo; Prima</a>
+                    <a href="<?= esc($buildUrl($currentPage - 1)) ?>" class="btn secondary" style="padding:0.4rem 0.7rem; font-size:0.85rem;">&lsaquo; Precedente</a>
+                <?php endif; ?>
+
+                <?php for ($p = $startPage; $p <= $endPage; $p++) : ?>
+                    <a href="<?= esc($buildUrl($p)) ?>" class="btn <?= $p === $currentPage ? 'primary' : 'secondary' ?>" style="padding:0.4rem 0.7rem; font-size:0.85rem;"><?= $p ?></a>
                 <?php endfor; ?>
+
+                <?php if ($currentPage < $totalPages) : ?>
+                    <a href="<?= esc($buildUrl($currentPage + 1)) ?>" class="btn secondary" style="padding:0.4rem 0.7rem; font-size:0.85rem;">Successivo &rsaquo;</a>
+                    <a href="<?= esc($buildUrl($totalPages)) ?>" class="btn secondary" style="padding:0.4rem 0.7rem; font-size:0.85rem;">Ultimo &raquo;</a>
+                <?php endif; ?>
             </div>
         <?php endif; ?>
     <?php endif; ?>
