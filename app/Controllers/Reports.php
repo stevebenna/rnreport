@@ -98,7 +98,38 @@ class Reports extends BaseController {
                     $next = $rows[$i + 1];
                     $diff = $next['timestamp'] - $row['timestamp'];
 
-                    if ($diff > 59) {
+                     if($diff > $song['duration']*1.1){
+
+                        $hours = floor($song['duration'] / 3600);
+                        $minutes = floor(($song['duration'] % 3600) / 60);
+                        $seconds = $song['duration'] % 60;
+                        $duration = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+
+                        $outputRows[] = [
+                            'artist' => $row['artist'],
+                            'song' => $row['song'],
+                            'date' => date('d/m/Y', strtotime($date)),
+                            'time' => $time,
+                            'duration' => $duration,
+                            'seconds' => $song['duration']
+                        ];
+
+                        $itsrRows[] = [
+                            'date_emissione' => date('d/m/Y', strtotime($date)),
+                            'orario_emissione' => $time,
+                            'titolo' => $row['song'],
+                            'artista_principale' => $row['artist'],
+                            'durata' => $duration,
+                            'data_pubblicazione' => '',
+                            'versione' => '',
+                            'isrc' => $song['isrc'] ?? '',
+                            'etichetta' => $song['label'] ?? '',
+                            'produttore' => '',
+                            'album' => '',
+                        ];
+
+                    } 
+                    elseif ($diff > 59) {
                         $hours = floor($diff / 3600);
                         $minutes = floor(($diff % 3600) / 60);
                         $seconds = $diff % 60;
@@ -110,24 +141,27 @@ class Reports extends BaseController {
                             'date' => date('d/m/Y', strtotime($date)),
                             'time' => $time,
                             'duration' => $duration,
-                            'seconds' => $diff,
+                            'seconds' => $diff
                         ];
+
+                        $itsrRows[] = [
+                            'date_emissione' => date('d/m/Y', strtotime($date)),
+                            'orario_emissione' => $time,
+                            'titolo' => $row['song'],
+                            'artista_principale' => $row['artist'],
+                            'durata' => $duration,
+                            'data_pubblicazione' => '',
+                            'versione' => '',
+                            'isrc' => $song['isrc'] ?? '',
+                            'etichetta' => $song['label'] ?? '',
+                            'produttore' => '',
+                            'album' => '',
+                        ];
+
                     }
+
                 }
 
-                $itsrRows[] = [
-                    'date_emissione' => date('d/m/Y', strtotime($date)),
-                    'orario_emissione' => $time,
-                    'titolo' => $row['song'],
-                    'artista_principale' => $row['artist'],
-                    'durata' => $duration,
-                    'data_pubblicazione' => '',
-                    'versione' => '',
-                    'isrc' => $song['isrc'] ?? '',
-                    'etichetta' => $song['label'] ?? '',
-                    'produttore' => '',
-                    'album' => '',
-                ];
             }
 
             // Create out.csv output file
